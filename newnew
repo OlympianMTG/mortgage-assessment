@@ -17,7 +17,7 @@
 </head>
 <body>
     <!-- Logo: Assumes 'olympian-mortgage-logo.png' is in the root directory -->
-    <img src="olympian-mortgage-logo.png" alt="Olympian Mortgage Logo" class="logo">
+    <img src="logo.png" alt="logo.png" class="logo">
     <!-- For GitHub Pages, uncomment and adjust repo name if needed -->
     <!-- <img src="/mortgage-assessment/olympian-mortgage-logo.png" alt="Olympian Mortgage Logo" class="logo"> -->
     
