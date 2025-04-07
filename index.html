@@ -1,1 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Olympian Mortgage Candidate Assessment</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 10px; }
+        h1 { text-align: center; }
+        .question { margin-bottom: 20px; }
+        .question p { font-weight: bold; }
+        .result { display: none; text-align: center; margin-top: 20px; }
+        button { padding: 10px 20px; background-color: #007BFF; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>Olympian Mortgage Candidate Assessment</h1>
+    <p>Instructions: For each question, select the option (A, B, C, or D) that best reflects your instincts or approach. No experience? No problem—just pick what feels true to you.</p>
+    <form id="assessmentForm">
+        <div id="questions"></div>
+        <button type="button" onclick="calculateScore()">Submit</button>
+    </form>
+    <div id="result" class="result"></div>
 
+    <script>
+        const questions = [
+            { q: "A potential client ghosts you after one call—what’s your next move?", a: "Track them down with a surprise visit to stand out.", b: "Hammer them with calls until they answer or block you.", c: "Fire off a quick text and chase someone else.", d: "Let it go—plenty of fish in the sea." },
+            { q: "You’re halfway to your goal with a week left—how do you finish?", a: "Double down and blow past it for bragging rights.", b: "Push steady to hit it, no more, no less.", c: "Ease up—you’re already ahead of the pack.", d: "Coast—good enough gets you by." },
+            { q: "A long-shot lead dangles a huge payout—what’s your play?", a: "Throw everything at it—big risk, big reward.", b: "Test the waters with a cautious pitch first.", c: "Watch someone else try it before you commit.", d: "Skip it—stick to what you know works." },
+            { q: "A deal needs you to work past midnight—your call?", a: "Grind it out—sleep’s for after the win.", b: "Push late but cap it to stay fresh tomorrow.", c: "Hand it off—teamwork makes the dream work.", d: "Shut it down—health trumps hustle." },
+            { q: "Someone else lands a client you’ve chased for weeks—your reaction?", a: "Steal their playbook and outdo them next time.", b: "Shrug it off and hunt a bigger fish.", c: "Dig into why you lost and tweak your game.", d: "Chalk it up to bad luck and move on." },
+            { q: "You’re in a slump—how do you claw out?", a: "Triple your effort—hustle breaks any curse.", b: "Keep plugging away—consistency pays off.", c: "Take a breather to reset your headspace.", d: "Wait for the tide to turn on its own." },
+            { q: "A client says no after an hour-long pitch—what now?", a: "Circle back later with a sharper angle.", b: "Laugh it off—onto the next one fast.", c: "Replay every word to spot your fumble.", d: "Fume quietly—it’s their loss anyway." },
+            { q: "Your boss sets a goal that feels insane—your mindset?", a: "Charge at it—impossible is just a dare.", b: "Chip away at it—small wins add up.", c: "Talk it down to something sane.", d: "Ignore it—crazy goals don’t motivate." },
+            { q: "You’ve got zero leads on day one—how do you start?", a: "Hit the phones hard—100 calls minimum.", b: "Dig online for hidden prospects to target.", c: "Ask a coworker to toss you a bone.", d: "Sit tight—leads will show up eventually." },
+            { q: "What fires you up when the day drags?", a: "The chance to crush it and gloat later.", b: "Knowing every step gets you closer to a win.", c: "A pep talk from someone who’s been there.", d: "Caffeine and a prayer for 5 p.m." },
+            { q: "A task sucks but it’s gotta get done—your approach?", a: "Grind it out flawless—quitters don’t cut it.", b: "Slam it fast—done beats perfect.", c: "Pass it to someone less busy.", d: "Drag your feet until it’s urgent." },
+            { q: "You bomb a call with a big fish—what’s next?", a: "Tear it apart and rebuild your pitch overnight.", b: "Shake it off—hit the next call running.", c: "Step back—give it a day to simmer.", d: "Blame their mood and stew over it." },
+            { q: "A client pings you at 9 p.m. with a panic—what do you do?", a: "Jump on it—hustle never sleeps.", b: "Shoot a quick reply, handle it tomorrow.", c: "Punt it to a teammate who’s free.", d: "Ignore it—boundaries matter." },
+            { q: "You’re chasing a stretch goal—how far do you push?", a: "Past the breaking point—limits are fake.", b: "Hard but smart—pace yourself to the end.", c: "Just enough to look good to the boss.", d: "Bare minimum—why bleed for it?" },
+            { q: "No wins in two weeks—what keeps you at it?", a: "Raw stubbornness—failure’s not an option.", b: "Faith the next one’s around the corner.", c: "Fear of looking weak to the team.", d: "Hope someone throws you a lifeline." },
+            { q: "What’s a mortgage, at its core?", a: "A bank’s way to trap you in fees.", b: "A loan to buy a house, paid back over time.", c: "Free money if you play it right.", d: "A tax dodge for rich folks." },
+            { q: "A newbie screws up your shared workload—your move?", a: "Fix it yourself—speed beats drama.", b: "Coach them quick—team’s only as strong as the weak link.", c: "Let them drown—teaches grit.", d: "Snitch to the boss—cover your ass." },
+            { q: "You’re stuck on hold with a lender all morning—your vibe?", a: "Stay cool—tenacity wins the war.", b: "Multitask—grind while you wait.", c: "Hang up—time’s too precious.", d: "Rage quit—someone else can deal." },
+            { q: "A client’s on the fence after three calls—your strategy?", a: "Go hard—fourth call’s the charm.", b: "Ease off—let them come to you.", c: "Sweeten the pot with a risky promise.", d: "Drop them—they’re wasting your shot." },
+            { q: "What’s your fuel for a 12-hour day?", a: "The rush of stacking wins, tired or not.", b: "Pride in outlasting the clock.", c: "A fat paycheck at the end of it.", d: "Gritting through—collapse later." },
+            { q: "What’s an interest rate in simple terms?", a: "Extra cash you pay for borrowing.", b: "A bank’s profit cut on every deal.", c: "A random number they slap on loans.", d: "Your reward for paying on time." },
+            { q: "You’re three calls from your daily goal—night’s closing in. What’s your play?", a: "Sprint—make 10 to be sure.", b: "Push for three and call it a win.", c: "Wrap up—close enough counts.", d: "Punt—tomorrow’s another shot." },
+            { q: "A gatekeeper stonewalls you—how do you break through?", a: "Charm them until they cave or quit.", b: "Find a side door—email, text, anything.", c: "Keep calling—wear them down slow.", d: "Give up—gatekeepers own you." },
+            { q: "You’re drowning in follow-ups—how do you stay afloat?", a: "Power through—sleep when you’re dead.", b: "Prioritize the hottest and drop the rest.", c: "Beg for help from the team.", d: "Let ‘em pile up—chaos sorts itself." },
+            { q: "What’s a down payment, basically?", a: "Cash you fork over to seal the deal.", b: "The bank’s first grab at your wallet.", c: "A fee to skip monthly payments.", d: "Rent you pay before moving in." },
+            { q: "You miss a goal by a hair—your gut says:", a: "Screw it—close is close enough.", b: "Kick yourself—should’ve gone harder.", c: "Learn fast—nail it next time.", d: "Shrug—goals are just numbers." },
+            { q: "A client stalls for days—your next step?", a: "Hunt them down—force a yes or no.", b: "Nudge gently—keep the vibe alive.", c: "Wait it out—pressure’s on them.", d: "Move on—they’re not worth it." },
+            { q: "You’re new—how do you catch up to the vets?", a: "Outwork them—hours beat experience.", b: "Shadow them—steal every trick.", c: "Wing it—fake it ‘til you make it.", d: "Lean on them—let them carry you." },
+            { q: "A lead says they’re “just looking”—your response?", a: "Push anyway—everyone’s a buyer eventually.", b: "Back off—build trust for later.", c: "Tease a deal—hook them now.", d: "Next call—they’re not serious." },
+            { q: "What’s closing costs in a nutshell?", a: "Random fees to confuse you.", b: "Cash for taxes, fees, and lender stuff at the end.", c: "The bank’s bonus for saying yes.", d: "A deposit you get back later." },
+            { q: "You’re beat but one call could clinch it—your move?", a: "Dial it—exhaustion’s no excuse.", b: "Prep it—hit it fresh tomorrow.", c: "Pass it—someone else can shine.", d: "Skip it—rest beats a maybe." },
+            { q: "A week of nos—what’s your headspace?", a: "Fired up—yes is coming soon.", b: "Steady—slumps don’t define you.", c: "Shaky—doubt creeps in hard.", d: "Done—rejection’s a brick wall." },
+            { q: "You’re thrown a curveball task—your instinct?", a: "Crush it—prove you’re unstoppable.", b: "Figure it—slow and steady wins.", c: "Dodge it—stick to your lane.", d: "Flail—hope it works out." },
+            { q: "What’s your edge when the heat’s on?", a: "Raw drive—outlast everyone.", b: "Cool head—think through the mess.", c: "Team lift—lean on the crew.", d: "Luck—ride the wave ‘til it crashes." },
+            { q: "What’s a credit score’s role in a mortgage?", a: "Speeds up the bank’s paperwork.", b: "Sets how much you pay and if you get it.", c: "Just a tiebreaker for close calls.", d: "Locks in your down payment size." },
+            { q: "You’re racing a deadline—how far do you go?", a: "Bleed for it—deadlines are sacred.", b: "Hustle smart—hit it without breaking.", c: "Slide by—late’s not the end.", d: "Bail—stress isn’t worth it." },
+            { q: "A client’s rude but loaded—your tack?", a: "Grit teeth—money talks louder.", b: "Push back—respect’s non-negotiable.", c: "Ghost them—jerk’s not worth it.", d: "Kiss ass—whatever closes the deal." },
+            { q: "You’re green—how do you prove you belong?", a: "Out-hustle the pros—effort’s your ticket.", b: "Ask dumb questions—learn fast or bust.", c: "Lay low—blend ‘til you get it.", d: "Bluff hard—act like you’ve been here." },
+            { q: "A deal’s stuck in red tape—your play?", a: "Bulldoze through—force it done.", b: "Navigate it—patience pays off.", c: "Wait it out—someone else will fix it.", d: "Drop it—too much hassle." },
+            { q: "What’s a fixed-rate mortgage mean?", a: "Rate’s locked—same payment forever.", b: "Fixed fees, but the rate can jump.", c: "Bank fixes your credit first.", d: "Payments shrink over time." },
+            { q: "You’re swamped—how do you keep the fire?", a: "Thrive on it—chaos is your jam.", b: "Grind through—focus keeps you sane.", c: "Barely hang—stress eats you alive.", d: "Check out—survive ‘til it’s over." },
+            { q: "A rival’s killing it—your next step?", a: "Study them—beat them at their game.", b: "Ignore them—run your own race.", c: "Copy them—why reinvent the wheel?", d: "Wait—glory fades fast." },
+            { q: "You’re one yes from a bonus—your push?", a: "Call ‘til midnight—money’s on the line.", b: "Line up three shots—play the odds.", c: "Take the night—close enough’s fine.", d: "Hope it falls in your lap." },
+            { q: "What’s your hunger level starting out?", a: "Starving—gotta dominate day one.", b: "Hungry—steady wins build big.", c: "Curious—let’s see what sticks.", d: "Chill—pace yourself early." },
+            { q: "What’s a loan officer’s gig, roughly?", a: "Push papers and pray it works.", b: "Sell loans and guide buyers through.", c: "Collect cash when it’s all done.", d: "Fix rates for the bank’s cut." },
+            { q: "A client balks at your newbie status—your sell?", a: "Prove it—hustle harder than the vets.", b: "Charm it—fresh eyes beat old tricks.", c: "Deflect it—focus on the deal, not you.", d: "Fold it—they’re right, you’re green." },
+            { q: "You’re behind—how do you catch up?", a: "Sprint—outwork the clock.", b: "Strategize—work smarter, not harder.", c: "Coast—catch-up’s overrated.", d: "Lean—someone’s got your back." },
+            { q: "A tough day tanks—what’s your reset?", a: "Grind harder—tomorrow’s a new fight.", b: "Reflect—spot the weak link fast.", c: "Unwind—shake it off with a beer.", d: "Sulk—bad days hit hard." },
+            { q: "You’re thrown to the wolves—your vibe?", a: "Feast—pressure’s where you grow.", b: "Fight—claw your way to solid ground.", c: "Freeze—hope you don’t sink.", d: "Flee—run ‘til it’s safe." },
+            { q: "What’s your endgame here?", a: "Rule it—top dog or bust.", b: "Build it—stack wins, climb steady.", c: "Survive it—paychecks keep you going.", d: "Ride it—see where it lands." }
+        ];
+
+        const scoringGuide = [
+            { a:3, b:4, c:2, d:1 }, { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 },
+            { a:4, b:2, c:3, d:1 }, { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 },
+            { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 },
+            { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 }, { a:1, b:4, c:2, d:3 },
+            { a:4, b:3, c:2, d:1 }, { a:3, b:4, c:2, d:1 }, { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 },
+            { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 }, { a:3, b:4, c:2, d:1 }, { a:4, b:3, c:2, d:1 },
+            { a:4, b:2, c:1, d:3 }, { a:2, b:3, c:4, d:1 }, { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 },
+            { a:4, b:3, c:2, d:1 }, { a:2, b:4, c:3, d:1 }, { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 },
+            { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 }, { a:1, b:4, c:2, d:3 }, { a:4, b:3, c:2, d:1 },
+            { a:4, b:2, c:1, d:3 }, { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 }, { a:4, b:2, c:3, d:1 },
+            { a:4, b:3, c:2, d:1 }, { a:4, b:2, c:3, d:1 }, { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 },
+            { a:1, b:4, c:2, d:3 }, { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 },
+            { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 }
+        ];
+
+        function loadQuestions() {
+            const questionsDiv = document.getElementById('questions');
+            questions.forEach((q, i) => {
+                const div = document.createElement('div');
+                div.className = 'question';
+                div.innerHTML = `
+                    <p>${i + 1}. ${q.q}</p>
+                    <label><input type="radio" name="q${i}" value="a"> A) ${q.a}</label><br>
+                    <label><input type="radio" name="q${i}" value="b"> B) ${q.b}</label><br>
+                    <label><input type="radio" name="q${i}" value="c"> C) ${q.c}</label><br>
+                    <label><input type="radio" name="q${i}" value="d"> D) ${q.d}</label>
+                `;
+                questionsDiv.appendChild(div);
+            });
+        }
+
+        function calculateScore() {
+            let score = 0;
+            questions.forEach((_, i) => {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                if (selected) {
+                    const answer = selected.value;
+                    score += scoringGuide[i][answer];
+                }
+            });
+
+            const resultDiv = document.getElementById('result');
+            let interpretation = '';
+            if (score >= 150) {
+                interpretation = 'Ravenous hunger, quick to grasp basics—could thrive fast.';
+            } else if (score >= 100) {
+                interpretation = 'Solid drive, coachable—needs polish but has potential.';
+            } else {
+                interpretation = 'Lukewarm ambition or clueless on mortgages—tough fit.';
+            }
+
+            resultDiv.innerHTML = `Your Score: ${score}/200<br>${interpretation}`;
+            resultDiv.style.display = 'block';
+        }
+
+        window.onload = loadQuestions;
+    </script>
+</body>
+</html>
